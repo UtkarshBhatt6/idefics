@@ -49,10 +49,10 @@ def ds_transforms(example_batch,path):
     ])
 
     prompts = []
-    for i in range(len(example_batch['query'])):
+    for i in range(len(example_batch['sentence'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
-        caption = example_batch['query'][i].split(".")[0]
-        img_name=example_batch['imgname'][i]
+        caption = example_batch['sentence'][i].split(".")[0]
+        img_name=example_batch['image'][i]
         # image_url="train/png/"+img_name
         image_url=path+img_name
         image = Image.open(image_url)
@@ -60,7 +60,7 @@ def ds_transforms(example_batch,path):
             [
                 #
                 image,
-                f"Question: What's on the picture? Answer: This is {example_batch['label'][i]}. {caption}",
+                f"Question: What's on the picture? Answer: This is {example_batch['text_label'][i]}. {caption}",
             ],
         )
 
