@@ -174,12 +174,12 @@ bnb_config = BitsAndBytesConfig(
 
 processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
 # Simply take-off the quantization_config arg if you want to load the original model
-model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto")
+model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
 print(model)
 
 url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 prompts = [
-    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+    # "Instruction: provide an answer to the question. Use the image to answer.\n", 
     url,
     "Question: What's on the picture? Answer:",
 ]
