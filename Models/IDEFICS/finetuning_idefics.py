@@ -6,12 +6,10 @@ from datasets import load_dataset
 from datasets import Dataset
 # from peft import LoraConfig, get_peft_model
 from PIL import Image
-# from transformers import IdeficsForVisionText2Text, AutoProcessor, Trainer, TrainingArguments, BitsAndBytesConfig
-image = Image.open('../../ChartQADataset/train/png/two_col_81284.png')
-print(image)
-plt.imshow(image)
-train_json=pd.read_json("../../ChartQADataset/val/val_augmented.json")
-print(train_json)
+from transformers import IdeficsForVisionText2Text, AutoProcessor, Trainer, TrainingArguments, BitsAndBytesConfig
+
+eval_json=pd.read_json("../../ChartQADataset/val/val_augmented.json")
+print(eval_json)
 def check_inference(model, processor, prompts, max_new_tokens=50):
     tokenizer = processor.tokenizer
     bad_words = ["<image>", "<fake_token_around_image>"]
@@ -158,29 +156,38 @@ def check_inference(model, processor, prompts, max_new_tokens=50):
 # trainer.train()
 
 # print('training completed')
-# device = "cuda" if torch.cuda.is_available() else "cpu"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# # checkpoint = "HuggingFaceM4/tiny-random-idefics"
-# checkpoint = "HuggingFaceM4/idefics-9b"
+# checkpoint = "HuggingFaceM4/tiny-random-idefics"
+checkpoint = "HuggingFaceM4/idefics-9b"
 
 # # Here we skip some special modules that can't be quantized properly
-# bnb_config = BitsAndBytesConfig(
-#     load_in_4bit=True,
-#     bnb_4bit_use_double_quant=True,
-#     bnb_4bit_quant_type="nf4",
-#     bnb_4bit_compute_dtype=torch.float16,
-#     llm_int8_skip_modules=["lm_head", "embed_tokens"],
-# )
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    llm_int8_skip_modules=["lm_head", "embed_tokens"],
+)
 
-# processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
-# # Simply take-off the quantization_config arg if you want to load the original model
-# model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
-# print(model)
+processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
+# Simply take-off the quantization_config arg if you want to load the original model
+model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
+print(model)
 
-# url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
-#     url,
-#     "Question: What's on the picture? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)
+url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n", 
+    url,
+    "Question: What's on the picture? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)
+image = Image.open('../../ChartQADataset/train/png/two_col_81284.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: What is this image about ? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
