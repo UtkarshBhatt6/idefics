@@ -4,12 +4,12 @@ import torch
 import torchvision.transforms as transforms
 from datasets import load_dataset
 from datasets import Dataset
-# from peft import LoraConfig, get_peft_model
+from peft import LoraConfig, get_peft_model
 from PIL import Image
 from transformers import IdeficsForVisionText2Text, AutoProcessor, Trainer, TrainingArguments, BitsAndBytesConfig
 
-eval_json=pd.read_json("../../ChartQADataset/val/val_augmented.json")
-print(eval_json)
+# eval_json=pd.read_json("../../ChartQADataset/val/val_augmented.json")
+# print(eval_json)
 def check_inference(model, processor, prompts, max_new_tokens=50):
     tokenizer = processor.tokenizer
     bad_words = ["<image>", "<fake_token_around_image>"]
@@ -24,136 +24,99 @@ def check_inference(model, processor, prompts, max_new_tokens=50):
     generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
     print(generated_text)
 
-# def convert_to_rgb(image):
-#     # `image.convert("RGB")` would only work for .jpg images, as it creates a wrong background
-#     # for transparent images. The call to `alpha_composite` handles this case
-#     if image.mode == "RGB":
-#         return image
+def convert_to_rgb(image):
+    # `image.convert("RGB")` would only work for .jpg images, as it creates a wrong background
+    # for transparent images. The call to `alpha_composite` handles this case
+    if image.mode == "RGB":
+        return image
 
-#     image_rgba = image.convert("RGBA")
-#     background = Image.new("RGBA", image_rgba.size, (255, 255, 255))
-#     alpha_composite = Image.alpha_composite(background, image_rgba)
-#     alpha_composite = alpha_composite.convert("RGB")
-#     return alpha_composite
+    image_rgba = image.convert("RGBA")
+    background = Image.new("RGBA", image_rgba.size, (255, 255, 255))
+    alpha_composite = Image.alpha_composite(background, image_rgba)
+    alpha_composite = alpha_composite.convert("RGB")
+    return alpha_composite
 
-# def ds_transforms(example_batch,path):
-#     image_size = processor.image_processor.image_size
-#     image_mean = processor.image_processor.image_mean
-#     image_std = processor.image_processor.image_std
+def ds_transforms(example_batch,path):
+    image_size = processor.image_processor.image_size
+    image_mean = processor.image_processor.image_mean
+    image_std = processor.image_processor.image_std
 
-#     image_transform = transforms.Compose([
-#         convert_to_rgb,
-#         transforms.RandomResizedCrop((image_size, image_size), scale=(0.9, 1.0), interpolation=transforms.InterpolationMode.BICUBIC),
-#         transforms.ToTensor(),
-#         transforms.Normalize(mean=image_mean, std=image_std),
-#     ])
+    image_transform = transforms.Compose([
+        convert_to_rgb,
+        transforms.RandomResizedCrop((image_size, image_size), scale=(0.9, 1.0), interpolation=transforms.InterpolationMode.BICUBIC),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=image_mean, std=image_std),
+    ])
 
-#     prompts = []
-#     for i in range(len(example_batch['query'])):
-#         # We split the captions to avoid having very long examples, which would require more GPU ram during training
-#         caption = example_batch['query'][i].split(".")[0]
-#         img_name=example_batch['imgname'][i]
-#         # image_url="train/png/"+img_name
-#         image_url=path+img_name
-#         image = Image.open(image_url)
-#         prompts.append(
-#             [
-#                 #
-#                 image,
-#                 f"Question: What's on the picture? Answer: This is {example_batch['label'][i]}. {caption}",
-#             ],
-#         )
+    prompts = []
+    for i in range(len(example_batch['query'])):
+        # We split the captions to avoid having very long examples, which would require more GPU ram during training
+        caption = example_batch['query'][i].split(".")[0]
+        img_name=example_batch['imgname'][i]
+        # image_url="train/png/"+img_name
+        image_url=path+img_name
+        image = Image.open(image_url)
+        prompts.append(
+            [
+                #
+                image,
+                f"Question: What's on the picture? Answer: This is {example_batch['label'][i]}. {caption}",
+            ],
+        )
 
-#     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
+    inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
 
-#     inputs["labels"] = inputs["input_ids"]
+    inputs["labels"] = inputs["input_ids"]
 
-#     return inputs
+    return inputs
 
-# class ChartQADataset(Dataset):
-#     """ChartQA Dataset."""
+class ChartQADataset(Dataset):
+    """ChartQA Dataset."""
 
-#     def __init__(self, json_file, root_dir='./', transform=None):
-#         """
-#         Arguments:
-#             json_file (string): Path to the csv file with annotations.
+    def __init__(self, json_file, root_dir='./', transform=None):
+        """
+        Arguments:
+            json_file (string): Path to the csv file with annotations.
 
-#         """
-#         self.tacos_df = pd.read_json(json_file)
-#         self.root_dir = root_dir
-#         self.transform = transform
-#         self.image_name=self.tacos_df['imgname']
-#         self.sentences = self.tacos_df['query']
-#         #self.labels = self.tacos_df['Sentiment']
-#         self.text_labels = self.tacos_df['label']
-#         #self.abstracts = self.tacos_df['Aspect']
+        """
+        self.tacos_df = pd.read_json(json_file)
+        self.root_dir = root_dir
+        self.transform = transform
+        self.image_name=self.tacos_df['imgname']
+        self.sentences = self.tacos_df['query']
+        #self.labels = self.tacos_df['Sentiment']
+        self.text_labels = self.tacos_df['label']
+        #self.abstracts = self.tacos_df['Aspect']
 
-#     def __len__(self):
-#         return len(self.tacos_df)
+    def __len__(self):
+        return len(self.tacos_df)
 
-#     def __getitem__(self, idx):
-#         # if torch.is_tensor(idx):
-#         #     idx = idx.tolist()
-#         image=self.image_name[idx]
-#         sentence = self.sentences[idx]
-#         #label = self.labels[idx]
-#         text_label = self.text_labels[idx]
-#         #print('text label',text_label)
-#         #abstract = self.abstracts[idx]
+    def __getitem__(self, idx):
+        # if torch.is_tensor(idx):
+        #     idx = idx.tolist()
+        image=self.image_name[idx]
+        sentence = self.sentences[idx]
+        #label = self.labels[idx]
+        text_label = self.text_labels[idx]
+        #print('text label',text_label)
+        #abstract = self.abstracts[idx]
 
-#         sample = {'image':image, 'sentence': sentence,  'text_label': text_label}
+        sample = {'image':image, 'sentence': sentence,  'text_label': text_label}
+        return sample
 
-#         return sample
+    def __repr__(self):
+        return f"ChartQADataset(num_samples={len(self)})"
+    
 
-# tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
-# tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
+tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
+tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
 
-# dataset_train = Dataset.from_dict(
-#         {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
-# dataset_val = Dataset.from_dict(
-#         {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
+dataset_train = Dataset.from_dict(
+        {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
+dataset_val = Dataset.from_dict(
+        {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
 
-# model_name = checkpoint.split("/")[1]
-# config = LoraConfig(
-#     r=16,
-#     lora_alpha=32,
-#     target_modules=["q_proj", "k_proj", "v_proj"],
-#     lora_dropout=0.05,
-#     bias="none",
-# )
-# model = get_peft_model(model, config)
-# model.print_trainable_parameters()
-# training_args = TrainingArguments(
-#     output_dir=f"{model_name}-output",
-#     learning_rate=2e-4,
-#     fp16=True,
-#     per_device_train_batch_size=2,
-#     per_device_eval_batch_size=2,
-#     gradient_accumulation_steps=8,
-#     dataloader_pin_memory=False,
-#     save_total_limit=3,
-#     evaluation_strategy="steps",
-#     save_strategy="steps",
-#     save_steps=40,
-#     eval_steps=20,
-#     logging_steps=20,
-#     max_steps=40,
-#     remove_unused_columns=False,
-#     push_to_hub=False,
-#     label_names=["labels"],
-#     load_best_model_at_end=True,
-#     report_to=None,
-#     optim="paged_adamw_8bit",
-# )
 
-# trainer = Trainer(
-#     model=model,
-#     args=training_args,
-#     train_dataset=train_ds,
-#     eval_dataset=eval_ds,
-# )
-
-# trainer.train()
 
 # print('training completed')
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -174,6 +137,51 @@ processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
 # Simply take-off the quantization_config arg if you want to load the original model
 model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
 print(model)
+
+model_name = checkpoint.split("/")[1]
+config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    target_modules=["q_proj", "k_proj", "v_proj"],
+    lora_dropout=0.05,
+    bias="none",
+)
+# train_ds =ds_transforms(dataset_train,"/content/drive/My Drive/png/")
+train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png/')
+eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png/')
+model = get_peft_model(model, config)
+model.print_trainable_parameters()
+training_args = TrainingArguments(
+    output_dir=f"{model_name}-output",
+    learning_rate=2e-4,
+    fp16=True,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
+    gradient_accumulation_steps=8,
+    dataloader_pin_memory=False,
+    save_total_limit=3,
+    evaluation_strategy="steps",
+    save_strategy="steps",
+    save_steps=40,
+    eval_steps=20,
+    logging_steps=20,
+    max_steps=40,
+    remove_unused_columns=False,
+    push_to_hub=False,
+    label_names=["labels"],
+    load_best_model_at_end=True,
+    report_to=None,
+    optim="paged_adamw_8bit",
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_ds,
+    eval_dataset=eval_ds,
+)
+
+trainer.train()
 
 url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 prompts = [
