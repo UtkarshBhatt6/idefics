@@ -6,7 +6,7 @@ from datasets import load_dataset
 from datasets import Dataset
 from peft import LoraConfig, get_peft_model
 from PIL import Image
-from transformers import IdeficsForVisionText2Text, AutoProcessor, Trainer, TrainingArguments, BitsAndBytesConfig
+from transformers import IdeficsForVisionText2Text, AutoProcessor,AutoTokenizer, Trainer, TrainingArguments, BitsAndBytesConfig
 
 # eval_json=pd.read_json("../../ChartQADataset/val/val_augmented.json")
 # print(eval_json)
@@ -94,10 +94,13 @@ class ChartQADataset(Dataset):
     def __getitem__(self, idx):
         # if torch.is_tensor(idx):
         #     idx = idx.tolist()
+        # image=torch.tensor(self.image_name[idx]).squeeze()
+        # sentence=torch.tensor(self.sentences[idx]).squeeze()
+        # text_label=torch.tensor(self.text_labels[idx]).squeeze()
         image=self.image_name[idx]
         sentence = self.sentences[idx]
-        #label = self.labels[idx]
         text_label = self.text_labels[idx]
+        #label = self.labels[idx]
         #print('text label',text_label)
         #abstract = self.abstracts[idx]
 
@@ -133,7 +136,8 @@ bnb_config = BitsAndBytesConfig(
     llm_int8_skip_modules=["lm_head", "embed_tokens"],
 )
 
-processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
+# processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
+processor = AutoTokenizer.from_pretrained(checkpoint,use_fast=True, use_auth_token=False)
 # Simply take-off the quantization_config arg if you want to load the original model
 model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
 print(model)
