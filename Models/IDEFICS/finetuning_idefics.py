@@ -137,7 +137,7 @@ bnb_config = BitsAndBytesConfig(
 )
 
 # processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
-processor = AutoTokenizer.from_pretrained(checkpoint,use_fast=True, use_auth_token=False)
+processor = AutoTokenizer.from_pretrained(checkpoint,use_fast=False, use_auth_token=False)
 # Simply take-off the quantization_config arg if you want to load the original model
 model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
 print(model)
