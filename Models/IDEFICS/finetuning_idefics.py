@@ -111,8 +111,10 @@ class ChartQADataset(Dataset):
         return f"ChartQADataset(num_samples={len(self)})"
     
 
-tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
-tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
+# tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
+# tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
+tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
+tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
 
 dataset_train = Dataset.from_dict(
         {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
@@ -150,9 +152,10 @@ config = LoraConfig(
     lora_dropout=0.05,
     bias="none",
 )
-# train_ds =ds_transforms(dataset_train,"/content/drive/My Drive/png/")
-train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png/')
-eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png/')
+train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png_few/')
+eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png_few/')
+# train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png/')
+# eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png/')
 model = get_peft_model(model, config)
 model.print_trainable_parameters()
 training_args = TrainingArguments(
