@@ -121,10 +121,10 @@ class ChartQADataset(Dataset):
 tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
 tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
 
-dataset_train = Dataset.from_dict(
-        {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
-dataset_val = Dataset.from_dict(
-        {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
+# dataset_train = Dataset.from_dict(
+#         {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
+# dataset_val = Dataset.from_dict(
+#         {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
 
 
 
@@ -157,6 +157,8 @@ config = LoraConfig(
     lora_dropout=0.05,
     bias="none",
 )
+dataset_train=pd.read_json('../../ChartQADataset/train/train_augmented_few.json')
+dataset_val=pd.read_json('../../ChartQADataset/val/val_augmented_few.json')
 train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png_few/')
 eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png_few/')
 # train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png/')
@@ -191,7 +193,7 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_ds,
     eval_dataset=eval_ds,
-)
+)                       
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
