@@ -61,7 +61,7 @@ def ds_transforms(example_batch):
                example_batch['image_url'][i],
                 f"Question: {caption} Answer: Answer is {example_batch['name'][i]}.",
             ]
-        print(f"currprompt is {i}: {curr_prompt}")
+        # print(f"currprompt is {i}: {curr_prompt}")
         prompts.append(
 
            curr_prompt
@@ -71,7 +71,7 @@ def ds_transforms(example_batch):
     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
     # print("printing input_ids: ",inputs["input_ids"])
     inputs["labels"] = inputs["input_ids"]
-    print("inputs: ",inputs)
+    # print("inputs: ",inputs)
 
     return inputs
 # def ds_transforms(example_batch,path):
