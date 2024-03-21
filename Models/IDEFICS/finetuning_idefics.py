@@ -94,12 +94,12 @@ class ChartQADataset(Dataset):
     def __getitem__(self, idx):
         # if torch.is_tensor(idx):
         #     idx = idx.tolist()
-        image=torch.tensor(self.image_name[idx]).squeeze()
-        sentence=torch.tensor(self.sentences[idx]).squeeze()
-        text_label=torch.tensor(self.text_labels[idx]).squeeze()
-        # image=self.image_name[idx]
-        # sentence = self.sentences[idx]
-        # text_label = self.text_labels[idx]
+        # image=torch.tensor(self.image_name[idx])
+        # sentence=torch.tensor(self.sentences[idx]).squeeze()
+        # text_label=torch.tensor(self.text_labels[idx]).squeeze()
+        image=self.image_name.iloc[idx]
+        sentence = self.sentences.iloc[idx]
+        text_label = self.text_labels.iloc[idx]
         #label = self.labels[idx]
         #print('text label',text_label)
         #abstract = self.abstracts[idx]
