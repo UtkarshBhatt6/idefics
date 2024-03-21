@@ -113,8 +113,6 @@ def ds_transforms(example_batch,path):
 
 #     return inputs
 
-!pip install -q datasets
-from datasets import Dataset
 class ChartQADataset(Dataset):
     """ChartQA Dataset."""
 
