@@ -36,7 +36,7 @@ def convert_to_rgb(image):
     alpha_composite = alpha_composite.convert("RGB")
     return alpha_composite
 
-def ds_transforms(example_batch,path):
+def ds_transforms(example_batch):
     image_size = processor.image_processor.image_size
     image_mean = processor.image_processor.image_mean
     image_std = processor.image_processor.image_std
@@ -49,17 +49,17 @@ def ds_transforms(example_batch,path):
     ])
 
     prompts = []
-    for i in range(len(example_batch['query'])):
+    for i in range(len(example_batch['caption'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
-        caption = example_batch['query'][i].split(".")[0]
-        img_name=example_batch['imgname'][i]
-        # image_url="train/png/"+img_name
-        image_url=path+img_name
-        image = Image.open(image_url)
+        caption = example_batch['caption'][i].split(".")[0]
+        # img_name=example_batch['imgname'][i]
+        # # image_url="train/png/"+img_name
+        # image_url=path+img_name
+        # image = Image.open(image_url)
         curr_prompt= [
                 #
-                image,
-                f"Question: {caption} Answer: Answer is {example_batch['label'][i]}.",
+               example_batch['image_url'][i],
+                f"Question: {caption} Answer: Answer is {example_batch['name'][i]}.",
             ]
         print(f"currprompt is {i}: {curr_prompt}")
         prompts.append(
@@ -156,13 +156,13 @@ class ChartQADataset(Dataset):
 
 # tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
 # tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
-tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
-tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
+# tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
+# tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
 
-dataset_train = Dataset.from_dict(
-        {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
-dataset_val = Dataset.from_dict(
-        {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
+# dataset_train = Dataset.from_dict(
+#         {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
+# dataset_val = Dataset.from_dict(
+#         {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
 
 
 
@@ -195,10 +195,10 @@ config = LoraConfig(
     lora_dropout=0.05,
     bias="none",
 )
-dataset_train=pd.read_json('../../ChartQADataset/train/train_augmented_few.json')
-dataset_val=pd.read_json('../../ChartQADataset/val/val_augmented_few.json')
-train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png_few/')
-eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png_few/')
+# dataset_train=pd.read_json('../../ChartQADataset/train/train_augmented_few.json')
+# dataset_val=pd.read_json('../../ChartQADataset/val/val_augmented_few.json')
+# train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png_few/')
+# eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png_few/')
 # train_ds =ds_transforms(dataset_train,'../../ChartQADataset/train/png/')
 # eval_ds =ds_transforms(dataset_val,'../../ChartQADataset/val/png/')
 model = get_peft_model(model, config)
@@ -226,6 +226,12 @@ training_args = TrainingArguments(
     optim="paged_adamw_8bit",
 )
 print("no error in training_args ")
+ds = load_dataset("TheFusion21/PokemonCards")
+ds = ds["train"].train_test_split(test_size=0.002)
+train_ds = ds["train"]
+eval_ds = ds["test"]
+train_ds.set_transform(ds_transforms)
+eval_ds.set_transform(ds_transforms)
 trainer = Trainer(
     model=model,
     args=training_args,
