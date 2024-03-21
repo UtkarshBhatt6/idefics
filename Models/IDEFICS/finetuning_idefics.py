@@ -36,7 +36,7 @@ def convert_to_rgb(image):
     alpha_composite = alpha_composite.convert("RGB")
     return alpha_composite
 
-def ds_transforms(example_batch):
+def ds_transforms(example_batch,path):
     image_size = processor.image_processor.image_size
     image_mean = processor.image_processor.image_mean
     image_std = processor.image_processor.image_std
