@@ -49,17 +49,17 @@ def ds_transforms(example_batch,path):
     ])
 
     prompts = []
-    for i in range(len(example_batch['sentence'])):
+    for i in range(len(example_batch['query'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
-        caption = example_batch['sentence'][i].split(".")[0]
-        img_name=example_batch['image'][i]
+        caption = example_batch['query'][i].split(".")[0]
+        img_name=example_batch['imgname'][i]
         # image_url="train/png/"+img_name
         image_url=path+img_name
         image = Image.open(image_url)
         curr_prompt= [
                 #
                 image,
-                f"Question: {caption} Answer: Answer is {example_batch['text_label'][i]}.",
+                f"Question: {caption} Answer: Answer is {example_batch['label'][i]}.",
             ]
         print(f"currprompt is {i}: {curr_prompt}")
         prompts.append(
@@ -74,6 +74,44 @@ def ds_transforms(example_batch,path):
     print("inputs: ",inputs)
 
     return inputs
+# def ds_transforms(example_batch,path):
+#     image_size = processor.image_processor.image_size
+#     image_mean = processor.image_processor.image_mean
+#     image_std = processor.image_processor.image_std
+
+#     image_transform = transforms.Compose([
+#         convert_to_rgb,
+#         transforms.RandomResizedCrop((image_size, image_size), scale=(0.9, 1.0), interpolation=transforms.InterpolationMode.BICUBIC),
+#         transforms.ToTensor(),
+#         transforms.Normalize(mean=image_mean, std=image_std),
+#     ])
+
+#     prompts = []
+#     for i in range(len(example_batch['sentence'])):
+#         # We split the captions to avoid having very long examples, which would require more GPU ram during training
+#         caption = example_batch['sentence'][i].split(".")[0]
+#         img_name=example_batch['image'][i]
+#         # image_url="train/png/"+img_name
+#         image_url=path+img_name
+#         image = Image.open(image_url)
+#         curr_prompt= [
+#                 #
+#                 image,
+#                 f"Question: {caption} Answer: Answer is {example_batch['text_label'][i]}.",
+#             ]
+#         print(f"currprompt is {i}: {curr_prompt}")
+#         prompts.append(
+
+#            curr_prompt
+#         )
+
+
+#     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
+#     # print("printing input_ids: ",inputs["input_ids"])
+#     inputs["labels"] = inputs["input_ids"]
+#     print("inputs: ",inputs)
+
+#     return inputs
 
 class ChartQADataset(Dataset):
     """ChartQA Dataset."""
@@ -121,10 +159,10 @@ class ChartQADataset(Dataset):
 tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
 tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
 
-# dataset_train = Dataset.from_dict(
-#         {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
-# dataset_val = Dataset.from_dict(
-#         {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
+dataset_train = Dataset.from_dict(
+        {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
+dataset_val = Dataset.from_dict(
+        {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
 
 
 
