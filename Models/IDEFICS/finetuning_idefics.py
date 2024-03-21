@@ -113,6 +113,8 @@ def ds_transforms(example_batch,path):
 
 #     return inputs
 
+!pip install -q datasets
+from datasets import Dataset
 class ChartQADataset(Dataset):
     """ChartQA Dataset."""
 
@@ -129,6 +131,7 @@ class ChartQADataset(Dataset):
         self.sentences = self.tacos_df['query']
         #self.labels = self.tacos_df['Sentiment']
         self.text_labels = self.tacos_df['label']
+        self.id = self.tacos_df.index
         #self.abstracts = self.tacos_df['Aspect']
 
     def __len__(self):
@@ -143,26 +146,26 @@ class ChartQADataset(Dataset):
         image=self.image_name.iloc[idx]
         sentence = self.sentences.iloc[idx]
         text_label = self.text_labels.iloc[idx]
+        id = self.tacos_df['id'].iloc[idx] 
         #label = self.labels[idx]
         #print('text label',text_label)
         #abstract = self.abstracts[idx]
 
-        sample = {'image':image, 'sentence': sentence,  'text_label': text_label}
+        sample = {'id': id,'image':image, 'sentence': sentence,  'text_label': text_label}
         return sample
 
     def __repr__(self):
         return f"ChartQADataset(num_samples={len(self)})"
     
-
 # tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented.json')
 # tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented.json')
-tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few2.json')
-tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few2.json')
+tacos_dataset_train = ChartQADataset(json_file='../../ChartQADataset/train/train_augmented_few.json')
+tacos_dataset_val = ChartQADataset(json_file='../../ChartQADataset/val/val_augmented_few.json')
 
 dataset_train = Dataset.from_dict(
-        {"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
+        {"id":list(tacos_dataset_train.id),"image":list(tacos_dataset_train.image_name),"sentence": list(tacos_dataset_train.sentences), "text_label": list(tacos_dataset_train.text_labels)})
 dataset_val = Dataset.from_dict(
-        {"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
+        {"id":list(tacos_dataset_val.id),"image":list(tacos_dataset_val.image_name),"sentence": list(tacos_dataset_val.sentences), "text_label": list(tacos_dataset_val.text_labels)})
 
 
 
