@@ -61,7 +61,7 @@ def ds_transforms(example_batch,path):
                example_batch['image'][i],
                 f"Question: {caption} Answer: Answer is {example_batch['text_label'][i]}.",
             ]
-        # print(f"currprompt is {i}: {curr_prompt}")
+        print(f"currprompt is {i}: {curr_prompt}")
         prompts.append(
 
            curr_prompt
