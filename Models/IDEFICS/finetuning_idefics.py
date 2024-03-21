@@ -56,17 +56,20 @@ def ds_transforms(example_batch,path):
         # image_url="train/png/"+img_name
         image_url=path+img_name
         image = Image.open(image_url)
-        prompts.append(
-            [
+        curr_prompt= [
                 #
                 image,
                 f"Question: What's on the picture? Answer: This is {example_batch['text_label'][i]}. {caption}",
-            ],
+            ]
+        print('currprompt is ${i}: ',curr_prompt)
+        prompts.append(
+
+           curr_prompt
         )
 
 
     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
-    print("printing input_ids: ",inputs["input_ids"])
+    # print("printing input_ids: ",inputs["input_ids"])
     inputs["labels"] = inputs["input_ids"]
 
     return inputs
