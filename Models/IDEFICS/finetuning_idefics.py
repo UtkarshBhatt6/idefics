@@ -143,12 +143,101 @@ prompts = [
     "Question: What's on the picture? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)
-image = Image.open('../../ChartQADataset/train/png/two_col_81284.png')
+image = Image.open('../../ChartQADataset/test/png/multi_col_803.png')
 print(image)
 plt.imshow(image)
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n",
   image,
-    "Question: What was the sales growth of chicken ? Answer:",
+    "Question: How many stores did Saint Laurent operate in Western Europe in 2020? Answer:",
+]
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: In what year did online sales make up 6.8 percent of retail sales of jewelry, watches and accessories in Germany? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What is the predicted increase in online sales of jewelry, watches and accessories in Germany by 2018? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2019? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20569.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many drone strikes did the U.S. carry out in Somalia in 2019? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many cases did Lombardy have? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+
+image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
