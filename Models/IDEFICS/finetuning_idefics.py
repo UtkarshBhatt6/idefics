@@ -56,7 +56,8 @@ def ds_transforms(example_batch):
         curr_prompt= [
                 #
                 example_batch['image'][i],
-                f"Question: {caption} Answer: Answer is {example_batch['label'][i]}.",
+                # f"Question: {caption} Answer: Answer is {example_batch['label'][i]}.",
+                f"Question: What's on the picture? Answer: This is {example_batch['label'][i]}. {caption}",
             ]
         # print(f"currprompt is {i}: {curr_prompt}")
         prompts.append(
@@ -252,6 +253,6 @@ plt.imshow(image)
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n",
   image,
-    "Question: What is this image about ? Answer:",
+    "Question: What was the sales growth of chicken ? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
