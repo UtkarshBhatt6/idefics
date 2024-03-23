@@ -202,36 +202,36 @@ prompts = [
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
 
-image = Image.open('../../ChartQADataset/test/png/multi_col_20569.png')
+image = Image.open('../../ChartQADataset/test/png/two_col_63423.png')
 print(image)
 plt.imshow(image)
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n",
   image,
-    "Question:How many drone strikes did the U.S. carry out in Somalia in 2019? Answer:",
+    "Question:Which country had the lowest growth in online traffic? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
-
-image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print("expected_answer Germany")
+image = Image.open('../../ChartQADataset/test/png/two_col_43841.png')
 print(image)
 plt.imshow(image)
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n",
   image,
-    "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
+    "Question:Which country was the leading market for the import of glucose syrup into the UK in 2020? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
-
-image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
+print("expected_answer Belgium")
+image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
 print(image)
 plt.imshow(image)
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n",
   image,
-    "Question:How many cases did Lombardy have? Answer:",
+    "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
-
+print("expected_answer Sofia Vergara")
 image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
 print(image)
 plt.imshow(image)
@@ -241,3 +241,4 @@ prompts = [
     "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
 ]
 check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Autonomous Province of Bolzano")
