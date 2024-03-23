@@ -179,7 +179,7 @@ bnb_config = BitsAndBytesConfig(
     llm_int8_skip_modules=["lm_head", "embed_tokens"],
 )
 
-processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False)
+processor = AutoProcessor.from_pretrained(checkpoint, use_auth_token=False,cache_dir = '/NS/ssdecl/work/')
 # processor = AutoTokenizer.from_pretrained(checkpoint,use_fast=False, use_auth_token=False)
 # Simply take-off the quantization_config arg if you want to load the original model
 model = IdeficsForVisionText2Text.from_pretrained(checkpoint, quantization_config=bnb_config, device_map="auto",cache_dir = '/NS/ssdecl/work/')
@@ -224,7 +224,7 @@ training_args = TrainingArguments(
     optim="paged_adamw_8bit",
 )
 print("no error in training_args ")
-ds = load_dataset("HuggingFaceM4/ChartQA")
+ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
 ds = ds["train"].train_test_split(test_size=0.002)
 train_ds = ds["train"]
 eval_ds = ds["test"]
