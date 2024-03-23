@@ -45,7 +45,7 @@ def ds_transforms(example_batch):
         transforms.Normalize(mean=image_mean, std=image_std),
     ])
 
-    prompts = []
+    prompts = [ "Instruction: You are a chart question answering model whose purpose is to extract useful information from images and do mathematical manipulations to get the answer of the given questions.\n",]
     for i in range(len(example_batch['query'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
         caption = example_batch['query'][i].split(".")[0]
@@ -226,7 +226,7 @@ image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
 print(image)
 plt.imshow(image)
 prompts = [
-    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+   
   image,
     "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
 ]
