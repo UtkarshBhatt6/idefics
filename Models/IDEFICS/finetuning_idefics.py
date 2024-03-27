@@ -44,7 +44,7 @@ def ds_transforms(example_batch):
         transforms.ToTensor(),
         transforms.Normalize(mean=image_mean, std=image_std),
     ])
-
+   
     prompts = [ "Instruction: You are a chart question answering model whose purpose is to extract useful information from images and do mathematical manipulations to get the answer of the given questions.\n",]
     for i in range(len(example_batch['query'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
@@ -62,9 +62,12 @@ def ds_transforms(example_batch):
            curr_prompt
         )
 
-
+    labels = [float(label) for label in example_batch['label']]
+ 
     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
     inputs["labels"] = inputs["input_ids"]
+    # inputs["labels"] = inputs["input_ids"]
+    inputs["labels"] = torch.tensor(labels, dtype=torch.float32)
 
     return inputs
 
