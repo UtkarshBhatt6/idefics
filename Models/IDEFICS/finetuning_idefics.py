@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt 
 import pandas as pd
-import numpy as np
 import torch
 import torchvision.transforms as transforms
 from datasets import load_dataset
@@ -45,7 +44,7 @@ def ds_transforms(example_batch):
         transforms.ToTensor(),
         transforms.Normalize(mean=image_mean, std=image_std),
     ])
-   
+
     prompts = [ "Instruction: You are a chart question answering model whose purpose is to extract useful information from images and do mathematical manipulations to get the answer of the given questions.\n",]
     for i in range(len(example_batch['query'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
@@ -63,12 +62,9 @@ def ds_transforms(example_batch):
            curr_prompt
         )
 
-    labels = [float(label) for label in example_batch['label']]
- 
+
     inputs = processor(prompts, transform=image_transform, return_tensors="pt").to(device)
     inputs["labels"] = inputs["input_ids"]
-    # inputs["labels"] = inputs["input_ids"]
-    inputs["labels"] = torch.tensor(labels, dtype=torch.float32)
 
     return inputs
 
@@ -126,14 +122,9 @@ training_args = TrainingArguments(
 )
 print("no error in training_args ")
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
-ds = ds["train"].train_test_split(test_size=0.75)
+ds = ds["train"].train_test_split(test_size=0.002)
 train_ds = ds["train"]
 eval_ds = ds["test"]
-# train_val_test_ds = ds["train"].train_test_split(test_size=0.2)
-# train_ds = train_val_test_ds["train"]
-# eval_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["train"]
-# test_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["test"]
-# train_ds, eval_ds, test_ds = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
 train_ds.set_transform(ds_transforms)
 eval_ds.set_transform(ds_transforms)
 trainer = Trainer(
@@ -145,113 +136,109 @@ trainer = Trainer(
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
-# evaluation_result = trainer.evaluate(test_ds)
-# print(f"evaluation result: {evaluation_result}")
-# accuracy = evaluation_result["eval_accuracy"]
-# print(f"Final accuracy on test set: {accuracy}")
-# url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
-#     url,
-#     "Question: What's on the picture? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)
-# image = Image.open('../../ChartQADataset/test/png/multi_col_803.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question: How many stores did Saint Laurent operate in Western Europe in 2020? Answer:",
-# ]
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question: In what year did online sales make up 6.8 percent of retail sales of jewelry, watches and accessories in Germany? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n", 
+    url,
+    "Question: What's on the picture? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)
+image = Image.open('../../ChartQADataset/test/png/multi_col_803.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: How many stores did Saint Laurent operate in Western Europe in 2020? Answer:",
+]
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: In what year did online sales make up 6.8 percent of retail sales of jewelry, watches and accessories in Germany? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:What is the predicted increase in online sales of jewelry, watches and accessories in Germany by 2018? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What is the predicted increase in online sales of jewelry, watches and accessories in Germany by 2018? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:How many companies were in Hungary's insurance market in 2013? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:How many companies were in Hungary's insurance market in 2019? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2019? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/two_col_63423.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which country had the lowest growth in online traffic? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Germany")
-# image = Image.open('../../ChartQADataset/test/png/two_col_43841.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which country was the leading market for the import of glucose syrup into the UK in 2020? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Belgium")
-# image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
+image = Image.open('../../ChartQADataset/test/png/two_col_63423.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which country had the lowest growth in online traffic? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Germany")
+image = Image.open('../../ChartQADataset/test/png/two_col_43841.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which country was the leading market for the import of glucose syrup into the UK in 2020? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Belgium")
+image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
+print(image)
+plt.imshow(image)
+prompts = [
    
-#   image,
-#     "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Sofia Vergara")
-# image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Autonomous Province of Bolzano")
+  image,
+    "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Sofia Vergara")
+image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Autonomous Province of Bolzano")
