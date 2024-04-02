@@ -143,10 +143,10 @@ trainer = Trainer(
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
-evaluation_result = trainer.evaluate(test_ds)
-print(f"evaluation result: {evaluation_result}")
-accuracy = evaluation_result["eval_accuracy"]
-print(f"Final accuracy on test set: {accuracy}")
+# evaluation_result = trainer.evaluate(test_ds)
+# print(f"evaluation result: {evaluation_result}")
+# accuracy = evaluation_result["eval_accuracy"]
+# print(f"Final accuracy on test set: {accuracy}")
 # url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 # prompts = [
 #     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
