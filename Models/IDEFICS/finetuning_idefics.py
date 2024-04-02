@@ -55,8 +55,8 @@ def ds_transforms(example_batch):
         curr_prompt= [
                 #
                 example_batch['image'][i],
-                # f"Question: {caption} Answer: Answer is {example_batch['label'][i]}.",
-                f"Question: {caption} Answer: {example_batch['label'][i][0]}",
+                # f"Question: {caption} Answer: {example_batch['label'][i][0]}",
+               f"Question: What's on the picture? Answer: This is {example_batch['label'][i][0]}. {caption}",
             ]
         # print(curr_prompt);
         prompts.append(
