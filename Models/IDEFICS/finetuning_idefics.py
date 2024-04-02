@@ -128,19 +128,19 @@ print("no error in training_args ")
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
 ds = ds["train"].train_test_split(test_size=0.75)
 train_ds = ds["train"]
-test_ds = ds["test"]
+eval_ds = ds["test"]
 # train_val_test_ds = ds["train"].train_test_split(test_size=0.2)
 # train_ds = train_val_test_ds["train"]
 # eval_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["train"]
 # test_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["test"]
 # train_ds, eval_ds, test_ds = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
 train_ds.set_transform(ds_transforms)
-test_ds.set_transform(ds_transforms)
+eval_ds.set_transform(ds_transforms)
 trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_ds,
-    # eval_dataset=eval_ds,
+    eval_dataset=eval_ds,
 )                       
 print("no error in trainer")
 trainer.train()
