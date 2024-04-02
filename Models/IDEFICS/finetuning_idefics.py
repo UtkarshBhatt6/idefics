@@ -47,7 +47,7 @@ def ds_transforms(example_batch):
         transforms.Normalize(mean=image_mean, std=image_std),
     ])
 
-    prompts = [ "Instruction: You are a chart question answering model whose purpose is to extract useful information from images and do mathematical manipulations to get the answer of the given questions.\n",]
+    prompts = [ ]
     for i in range(len(example_batch['query'])):
         # We split the captions to avoid having very long examples, which would require more GPU ram during training
         caption = example_batch['query'][i].split(".")[0]
