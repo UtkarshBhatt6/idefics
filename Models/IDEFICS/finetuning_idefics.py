@@ -122,7 +122,7 @@ training_args = TrainingArguments(
 )
 print("no error in training_args ")
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
-ds = ds["train"].train_test_split(test_size=0.7)
+ds = ds["train"].train_test_split(train_size=0.75)
 train_ds = ds["train"]
 eval_ds = ds["test"]
 train_ds.set_transform(ds_transforms)
@@ -131,12 +131,15 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_ds,
-    eval_dataset=train_ds,
+    eval_dataset=eval_ds,
 )                       
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
-trainer.evaluate(eval_dataset=eval_ds)
+eval_output=trainer.evaluate()
+eval_acc = eval_output['eval_accuracy']
+print(eval_output)
+print('acc: ',eval_acc)
 url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
