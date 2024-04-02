@@ -137,8 +137,8 @@ print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
 eval_output=trainer.evaluate()
-eval_acc = eval_output['eval_accuracy']
 print(eval_output)
+eval_acc = eval_output['eval_accuracy']
 print('acc: ',eval_acc)
 url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 prompts = [
