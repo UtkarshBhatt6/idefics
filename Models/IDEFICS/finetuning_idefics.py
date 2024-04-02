@@ -70,11 +70,10 @@ def ds_transforms(example_batch):
 
     return inputs
 
-def compute_metrics(eval_preds):
-    metric = evaluate.load("glue", "mrpc")
-    logits, labels = eval_preds
-    predictions = np.argmax(logits, axis=-1)
-    return metric.compute(predictions=predictions, references=labels)
+def compute_metrics(eval_pred):
+    """Computes accuracy on a batch of predictions"""
+    predictions = np.argmax(eval_pred.predictions, axis=1)
+    return metric.compute(predictions=predictions, references=eval_pred.label_ids)
 # print('training completed')
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
