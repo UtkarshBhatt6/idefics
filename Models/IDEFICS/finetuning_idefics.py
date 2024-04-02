@@ -122,7 +122,7 @@ training_args = TrainingArguments(
 )
 print("no error in training_args ")
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
-ds = ds["train"].train_test_split(test_size=0.002)
+ds = ds["train"].train_test_split(test_size=0.7)
 train_ds = ds["train"]
 eval_ds = ds["test"]
 train_ds.set_transform(ds_transforms)
