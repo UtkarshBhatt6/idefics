@@ -131,11 +131,12 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_ds,
-    eval_dataset=eval_ds,
+    # eval_dataset=eval_ds,
 )                       
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
+trainer.evaluate(eval_dataset=eval_ds)
 url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 prompts = [
     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
