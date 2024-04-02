@@ -131,7 +131,7 @@ trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_ds,
-    # eval_dataset=eval_ds,
+    eval_dataset=train_ds,
 )                       
 print("no error in trainer")
 trainer.train()
