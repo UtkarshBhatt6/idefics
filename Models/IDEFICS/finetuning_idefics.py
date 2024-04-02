@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt 
 import pandas as pd
+import numpy as np
 import torch
 import torchvision.transforms as transforms
 from datasets import load_dataset
@@ -125,28 +126,29 @@ training_args = TrainingArguments(
 )
 print("no error in training_args ")
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
-# ds = ds["train"].train_test_split(test_size=0.002)
-# train_ds = ds["train"]
-# eval_ds = ds["test"]
-train_val_test_ds = ds["train"].train_test_split(test_size=0.2)
-train_ds = train_val_test_ds["train"]
-eval_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["train"]
-test_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["test"]
+ds = ds["train"].train_test_split(test_size=0.75)
+train_ds = ds["train"]
+test_ds = ds["test"]
+# train_val_test_ds = ds["train"].train_test_split(test_size=0.2)
+# train_ds = train_val_test_ds["train"]
+# eval_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["train"]
+# test_ds = train_val_test_ds["test"].train_test_split(test_size=0.5)["test"]
+# train_ds, eval_ds, test_ds = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
 train_ds.set_transform(ds_transforms)
-eval_ds.set_transform(ds_transforms)
+test_ds.set_transform(ds_transforms)
 trainer = Trainer(
     model=model,
     args=training_args,
     train_dataset=train_ds,
-    eval_dataset=eval_ds,
+    # eval_dataset=eval_ds,
 )                       
 print("no error in trainer")
 trainer.train()
 print("no error in trainer.train()")
-# evaluation_result = trainer.evaluate(test_ds)
-# print(f"evaluation result: {evaluation_result}")
-# accuracy = evaluation_result["eval_accuracy"]
-# print(f"Final accuracy on test set: {accuracy}")
+evaluation_result = trainer.evaluate(test_ds)
+print(f"evaluation result: {evaluation_result}")
+accuracy = evaluation_result["eval_accuracy"]
+print(f"Final accuracy on test set: {accuracy}")
 # url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 # prompts = [
 #     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
