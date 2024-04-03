@@ -73,6 +73,8 @@ def ds_transforms(example_batch):
 def compute_metrics(eval_pred):
     """Computes accuracy on a batch of predictions"""
     predictions = np.argmax(eval_pred.predictions, axis=1)
+    print("Predictions shape:", predictions.shape)
+    print("Labels shape:", eval_pred.label_ids.shape)
     return metric.compute(predictions=predictions, references=eval_pred.label_ids)
 # print('training completed')
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -128,7 +130,7 @@ training_args = TrainingArguments(
 print("no error in training_args ")
 metric = evaluate.load('accuracy')
 ds = load_dataset("HuggingFaceM4/ChartQA",cache_dir='/NS/ssdecl/work/')
-ds = ds["train"].train_test_split(train_size=0.75)
+ds = ds["train"].train_test_split(test_size=0.2)
 train_ds = ds["train"]
 eval_ds = ds["test"]
 train_ds.set_transform(ds_transforms)
