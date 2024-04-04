@@ -71,6 +71,7 @@ def ds_transforms(example_batch):
     return inputs
 
 def compute_metrics(eval_pred):
+    print("inside compute matrices");
     """Computes accuracy on a batch of predictions"""
     predictions = np.argmax(eval_pred.predictions, axis=1)
     print("Predictions shape:", predictions.shape)
@@ -150,8 +151,6 @@ print("no error in trainer.train()")
 # print(eval_output)
 # eval_acc = eval_output['eval_accuracy']
 # print('acc: ',eval_acc)
-
-
 # url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
 # prompts = [
 #     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
