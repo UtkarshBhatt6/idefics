@@ -142,7 +142,7 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_ds,
     eval_dataset=eval_ds,
-    compute_metrics=compute_metrics
+    # compute_metrics=compute_metrics
 )                       
 print("no error in trainer")
 trainer.train()
@@ -151,109 +151,109 @@ print("no error in trainer.train()")
 # print(eval_output)
 # eval_acc = eval_output['eval_accuracy']
 # print('acc: ',eval_acc)
-# url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n", 
-#     url,
-#     "Question: What's on the picture? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)
-# image = Image.open('../../ChartQADataset/test/png/multi_col_803.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question: How many stores did Saint Laurent operate in Western Europe in 2020? Answer:",
-# ]
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question: In what year did online sales make up 6.8 percent of retail sales of jewelry, watches and accessories in Germany? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+url = "https://hips.hearstapps.com/hmg-prod/images/cute-photos-of-cats-in-grass-1593184777.jpg"
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n", 
+    url,
+    "Question: What's on the picture? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)
+image = Image.open('../../ChartQADataset/test/png/multi_col_803.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: How many stores did Saint Laurent operate in Western Europe in 2020? Answer:",
+]
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question: In what year did online sales make up 6.8 percent of retail sales of jewelry, watches and accessories in Germany? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What percentage of the retail sales of jewelry, watches and accessories in Germany were online in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:What is the predicted increase in online sales of jewelry, watches and accessories in Germany by 2018? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20436.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:What is the predicted increase in online sales of jewelry, watches and accessories in Germany by 2018? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:How many companies were in Hungary's insurance market in 2013? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2013? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:How many companies were in Hungary's insurance market in 2019? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
+image = Image.open('../../ChartQADataset/test/png/multi_col_20505.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:How many companies were in Hungary's insurance market in 2019? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
 
-# image = Image.open('../../ChartQADataset/test/png/two_col_63423.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which country had the lowest growth in online traffic? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Germany")
-# image = Image.open('../../ChartQADataset/test/png/two_col_43841.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which country was the leading market for the import of glucose syrup into the UK in 2020? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Belgium")
-# image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
+image = Image.open('../../ChartQADataset/test/png/two_col_63423.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which country had the lowest growth in online traffic? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Germany")
+image = Image.open('../../ChartQADataset/test/png/two_col_43841.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which country was the leading market for the import of glucose syrup into the UK in 2020? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Belgium")
+image = Image.open('../../ChartQADataset/test/png/two_col_60240.png')
+print(image)
+plt.imshow(image)
+prompts = [
    
-#   image,
-#     "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Sofia Vergara")
-# image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
-# print(image)
-# plt.imshow(image)
-# prompts = [
-#     # "Instruction: provide an answer to the question. Use the image to answer.\n",
-#   image,
-#     "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
-# ]
-# check_inference(model, processor, prompts, max_new_tokens=5)    
-# print("expected_answer Autonomous Province of Bolzano")
+  image,
+    "Question:Who was the highest paid actress between June 2017 and June 2018? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Sofia Vergara")
+image = Image.open('../../ChartQADataset/test/png/two_col_47.png')
+print(image)
+plt.imshow(image)
+prompts = [
+    # "Instruction: provide an answer to the question. Use the image to answer.\n",
+  image,
+    "Question:Which province had the highest relative incidence of the coronavirus? Answer:",
+]
+check_inference(model, processor, prompts, max_new_tokens=5)    
+print("expected_answer Autonomous Province of Bolzano")
