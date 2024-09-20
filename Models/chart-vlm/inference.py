@@ -6,9 +6,8 @@ from io import BytesIO
 
 # load vision encoder-decoder
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 model_name = "ahmed-masry/unichart-base-960"
-vision_model = VisionEncoderDecoderModel.from_pretrained(model_name,cache_dir='/NS/ssdecl/work',device_map='auto')
+vision_model = VisionEncoderDecoderModel.from_pretrained(model_name,cache_dir='/NS/ssdecl/work').to(device)
 processor = DonutProcessor.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
 
 # load Reasoning LLM
@@ -74,7 +73,6 @@ def t5_output(final_input):
     final_answer = final_answer.replace('</s>', '').replace('<pad>', '').strip()
     return final_answer
 
-
 def calc_output(image_url,question):
     input_prompt = "<extract_data_table> <s_answer>"
     data_table = unichart_output(image_url,"<extract_data_table> <s_answer>")
@@ -84,6 +82,21 @@ def calc_output(image_url,question):
     answer=t5_output(final_input)
     return answer
 
-image_url = "https://raw.githubusercontent.com/vis-nlp/ChartQA/main/ChartQA%20Dataset/val/png/multi_col_1229.png"
-question ="percentage of facebook users in 60+ age group ?"
-print(calc_output(image_url,question))
+def compute_accuracy(data_path):
+    df=pd.read_json(data_path,nrows=50,nlines=true)  
+    correct=0  
+    for i in range(df):
+        imgname=df[i]['imgname']
+        question=df[i]['query']
+        label=df[i]['label']
+        image_url=f'../../ChartQADataset/test/png/{imgname}'
+        model_answer=calc_output(image_url,question)
+        print(f'model_answer: {model_answer}, actual_answer: {label}')
+        if model_answer===label:
+            correct=correct+1
+    print(f'correct_answers: {correct}')
+
+path='../../ChartQADataset/test/test_augmented.json'
+compute_accuracy(path)
+
+    
