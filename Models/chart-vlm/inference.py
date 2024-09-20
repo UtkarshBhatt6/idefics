@@ -5,11 +5,11 @@ import requests
 from io import BytesIO
 
 # load vision encoder-decoder
-model_name = "ahmed-masry/unichart-base-960"
-model = VisionEncoderDecoderModel.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
-processor = DonutProcessor.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model.to(device)
+
+model_name = "ahmed-masry/unichart-base-960"
+vision_model = VisionEncoderDecoderModel.from_pretrained(model_name,cache_dir='/NS/ssdecl/work',device_map='auto')
+processor = DonutProcessor.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
 
 # load Reasoning LLM
 from transformers import T5Tokenizer, T5ForConditionalGeneration
@@ -25,10 +25,10 @@ def unichart_output(image_url,input_prompt):
     decoder_input_ids = processor.tokenizer(input_prompt, add_special_tokens=False, return_tensors="pt").input_ids
     pixel_values = processor(image, return_tensors="pt").pixel_values
     
-    outputs = model.generate(
+    outputs = vision_model.generate(
         pixel_values.to(device),
         decoder_input_ids=decoder_input_ids.to(device),
-        max_length=model.decoder.config.max_position_embeddings,
+        max_length=vision_model.decoder.config.max_position_embeddings,
         early_stopping=True,
         pad_token_id=processor.tokenizer.pad_token_id,
         eos_token_id=processor.tokenizer.eos_token_id,
