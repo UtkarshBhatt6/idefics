@@ -6,19 +6,19 @@ from io import BytesIO
 
 # load vision encoder-decoder
 model_name = "ahmed-masry/unichart-base-960"
-model = VisionEncoderDecoderModel.from_pretrained(model_name)
-processor = DonutProcessor.from_pretrained(model_name)
+model = VisionEncoderDecoderModel.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
+processor = DonutProcessor.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 # load Reasoning LLM
 from transformers import T5Tokenizer, T5ForConditionalGeneration
-tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xl")
-model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xl", device_map="auto")
+tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work')
+model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work', device_map="auto")
 
 
 
-def vision_model_output(image_url,input_prompt):
+def unichart_output(image_url,input_prompt):
     
     response = requests.get(image_url)
     image = Image.open(BytesIO(response.content)).convert("RGB")
@@ -72,24 +72,24 @@ def build_prompt(data, summary, question):
     '''
     return ins.strip() + '\n\n' + inputs
 
-def vision_model_output(image_url,input_prompt):
+def t5_output(final_input):
     input_ids = tokenizer(final_input, return_tensors="pt").input_ids.to("cuda")
     outputs = model.generate(input_ids)
     final_answer = tokenizer.decode(outputs[0])
     final_answer = final_answer.replace('</s>', '').replace('<pad>', '').strip()
-    print(final_answer)
+    return final_answer
 
 # generate data table
 input_prompt = "<extract_data_table> <s_answer>"
 image_url = "https://raw.githubusercontent.com/vis-nlp/ChartQA/main/ChartQA%20Dataset/val/png/multi_col_1229.png"
-data_table = model_output(image_url,input_prompt)
+data_table = unichart_output(image_url,input_prompt)
 print(data_table)
 
 # generate summary
 
 input_prompt = "<summarize_chart> <s_answer>"
 # image_url = "https://raw.githubusercontent.com/vis-nlp/ChartQA/main/ChartQA%20Dataset/val/png/multi_col_1229.png"
-summary = model_output(image_url,input_prompt)
+summary =unichart_output(image_url,input_prompt)
 print(summary)
 
 
@@ -103,9 +103,5 @@ final_input=build_prompt(data,summary,'''facebook percentage of users in 60+ age
 print(final_input)
 
 # get final answer
-
-input_ids = tokenizer(final_input, return_tensors="pt").input_ids.to("cuda")
-outputs = model.generate(input_ids)
-final_answer = tokenizer.decode(outputs[0])
-final_answer = final_answer.replace('</s>', '').replace('<pad>', '').strip()
-print(final_answer)
+answer=t5_output(final_input)
+print(answer)
