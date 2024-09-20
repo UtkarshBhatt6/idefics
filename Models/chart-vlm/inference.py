@@ -16,8 +16,6 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work')
 model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work', device_map="auto")
 
-
-
 def unichart_output(image_url,input_prompt):
     
     response = requests.get(image_url)
@@ -62,9 +60,6 @@ def csv2triples(csv, separator='|', delimiter='&'):
             #---------------------------------------------------------
     return triples
 
-# data = "Characteristic | Installed base in million units & 2017 | 105 & 2013 | 128 & 2010 | 109 & 2008 | 63 & 2006 | 64 & 1999 | 54 & 1995 | 64"
-# print(csv2triples(data))
-
 def build_prompt(data, summary, question):
     inputs = '<data>'+','.join(data) + '\n\n' + '<summary> ' + summary+ '\n\n<question> ' + question
     ins = '''
@@ -79,29 +74,16 @@ def t5_output(final_input):
     final_answer = final_answer.replace('</s>', '').replace('<pad>', '').strip()
     return final_answer
 
-# generate data table
-input_prompt = "<extract_data_table> <s_answer>"
+
+def calc_output(image_url,question):
+    input_prompt = "<extract_data_table> <s_answer>"
+    data_table = unichart_output(image_url,"<extract_data_table> <s_answer>")
+    summary =unichart_output(image_url,"<summarize_chart> <s_answer>")
+    data=csv2triples(data_table)
+    final_input=build_prompt(data,summary,question)
+    answer=t5_output(final_input)
+    return answer
+
 image_url = "https://raw.githubusercontent.com/vis-nlp/ChartQA/main/ChartQA%20Dataset/val/png/multi_col_1229.png"
-data_table = unichart_output(image_url,input_prompt)
-print(data_table)
-
-# generate summary
-
-input_prompt = "<summarize_chart> <s_answer>"
-# image_url = "https://raw.githubusercontent.com/vis-nlp/ChartQA/main/ChartQA%20Dataset/val/png/multi_col_1229.png"
-summary =unichart_output(image_url,input_prompt)
-print(summary)
-
-
-# convert to triples
-
-data=csv2triples(data_table)
-print(data)
-
-# get final_input
-final_input=build_prompt(data,summary,'''facebook percentage of users in 60+ age group ?''')
-print(final_input)
-
-# get final answer
-answer=t5_output(final_input)
-print(answer)
+question ="percentage of facebook users in 60+ age group ?"
+print(calc_output(image_url,question))
