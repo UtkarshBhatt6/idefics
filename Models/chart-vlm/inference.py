@@ -15,13 +15,18 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 tokenizer = T5Tokenizer.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work')
 model = T5ForConditionalGeneration.from_pretrained("google/flan-t5-xxl",cache_dir='/NS/ssdecl/work', device_map="auto")
 
-def unichart_output(image_url,input_prompt):
+def unichart_output(batch_image_urls,input_prompt):
     
-    response = requests.get(image_url)
-    image = Image.open(BytesIO(response.content)).convert("RGB")
+    batch_pixel_values = []
+    for image_url in batch_image_urls:
+        image = Image.open(image_url).convert("RGB")
+        pixel_values = processor(image, return_tensors="pt").pixel_values
+        batch_pixel_values.append(pixel_values)
+
+    batch_pixel_values = torch.cat(batch_pixel_values).to(device)
     decoder_input_ids = processor.tokenizer(input_prompt, add_special_tokens=False, return_tensors="pt").input_ids
-    pixel_values = processor(image, return_tensors="pt").pixel_values
-    
+    decoder_input_ids = decoder_input_ids.to(device)
+
     outputs = vision_model.generate(
         pixel_values.to(device),
         decoder_input_ids=decoder_input_ids.to(device),
@@ -34,11 +39,10 @@ def unichart_output(image_url,input_prompt):
         bad_words_ids=[[processor.tokenizer.unk_token_id]],
         return_dict_in_generate=True,
     )
-    
-    sequence = processor.batch_decode(outputs.sequences)[0]
-    sequence = sequence.replace(processor.tokenizer.eos_token, "").replace(processor.tokenizer.pad_token, "")
-    sequence = sequence.split("<s_answer>")[1].strip()
-    return sequence
+
+    batch_sequences = processor.batch_decode(outputs.sequences)
+    batch_sequences = [seq.replace(processor.tokenizer.eos_token, "").replace(processor.tokenizer.pad_token, "").split("<s_answer>")[1].strip() for seq in batch_sequences]
+    return batch_sequences
 
 def csv2triples(csv, separator='|', delimiter='&'):  
     lines = csv.strip().split(delimiter)
@@ -66,35 +70,59 @@ def build_prompt(data, summary, question):
     '''
     return ins.strip() + '\n\n' + inputs
 
-def t5_output(final_input):
-    input_ids = tokenizer(final_input, return_tensors="pt").input_ids.to("cuda")
+def t5_output(batch_final_inputs):
+    input_ids = tokenizer(batch_final_inputs, return_tensors="pt", padding=True, truncation=True).input_ids.to(device)
     outputs = model.generate(input_ids)
-    final_answer = tokenizer.decode(outputs[0])
-    final_answer = final_answer.replace('</s>', '').replace('<pad>', '').strip()
-    return final_answer
+    batch_answers = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    batch_answers = [answer.strip() for answer in batch_answers]
+    return batch_answers
 
-def calc_output(image_url,question):
-    input_prompt = "<extract_data_table> <s_answer>"
-    data_table = unichart_output(image_url,"<extract_data_table> <s_answer>")
-    summary =unichart_output(image_url,"<summarize_chart> <s_answer>")
-    data=csv2triples(data_table)
-    final_input=build_prompt(data,summary,question)
-    answer=t5_output(final_input)
-    return answer
+def calc_output_batch(batch_image_urls, batch_questions):
+    batch_data_tables = []
+    batch_summaries = []
 
-def compute_accuracy(data_path):
-    df=pd.read_json(data_path,nrows=50,nlines=true)  
-    correct=0  
-    for i in range(df):
-        imgname=df[i]['imgname']
-        question=df[i]['query']
-        label=df[i]['label']
-        image_url=f'../../ChartQADataset/test/png/{imgname}'
-        model_answer=calc_output(image_url,question)
-        print(f'model_answer: {model_answer}, actual_answer: {label}')
-        if model_answer===label:
-            correct=correct+1
-    print(f'correct_answers: {correct}')
+    batch_data_tables = unichart_output(batch_image_urls,"<extract_data_table> <s_answer>")
+    batch_summaries = unichart_output(batch_image_urls, "<summarize_chart> <s_answer>")
+    
+    batch_final_inputs = []
+    for data_table, summary, question in zip(batch_data_tables, batch_summaries, batch_questions):
+        data = csv2triples(data_table)
+        final_input = build_prompt(data, summary, question)
+        batch_final_inputs.append(final_input)
+    
+    batch_answers = t5_output(batch_final_inputs)
+    return batch_answers
+
+def compute_accuracy(data_path, batch_size=5):
+    df = pd.read_json(data_path)
+    correct = 0
+    total_rows = len(df)
+    
+    for i in range(0, total_rows, batch_size):
+        batch_df = df[i:i + batch_size]
+        
+        # Collect batch inputs
+        batch_image_urls = []
+        batch_questions = []
+        batch_labels = []
+        
+        for _, row in batch_df.iterrows():
+            imgname = row['imgname']
+            question = row['query']
+            label = row['label']
+            image_url = f'{data_path}/{imgname}'
+            batch_image_urls.append(image_url)
+            batch_questions.append(question)
+            batch_labels.append(label)
+        
+        batch_model_answers = calc_output(batch_image_urls, batch_questions)
+        
+        for model_answer, label in zip(batch_model_answers, batch_labels):
+            print(f'model_answer: {model_answer}, actual_answer: {label}')
+            if model_answer == label:
+                correct += 1
+    
+    print(f'Correct answers: {correct}')
 
 path='../../ChartQADataset/test/test_augmented.json'
 compute_accuracy(path)
