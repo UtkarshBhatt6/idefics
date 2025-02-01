@@ -66,12 +66,13 @@ def train():
     # TODO: vision_tower type check
     if model_args.vision_tower is not None:
         model_name = model_args.model_name_or_path
-        cfg_pretrained = TinyChartPhiConfig.from_pretrained(model_name)
+        cfg_pretrained = TinyChartPhiConfig.from_pretrained(model_name,cache_dir='/NS/ssdecl/work')
         model_class = TinyChartPhiForCausalLM
         model = model_class.from_pretrained(
             model_args.model_name_or_path,
             config=cfg_pretrained,
             cache_dir=training_args.cache_dir,
+            # cache_dir='/NS/ssdecl/work',
             **bnb_model_from_pretrained_args,
             # attn_implementation="flash_attention_2",
             attn_implementation=None,

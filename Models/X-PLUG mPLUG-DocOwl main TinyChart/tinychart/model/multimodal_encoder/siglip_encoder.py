@@ -659,8 +659,8 @@ class SigLipVisionModel(SigLipPreTrainedModel):
         >>> import requests
         >>> from transformers import AutoProcessor, SigLipVisionModel
 
-        >>> model = SigLipVisionModel.from_pretrained("google/siglip-base-patch16-224")
-        >>> processor = AutoProcessor.from_pretrained("google/siglip-base-patch16-224")
+        >>> model = SigLipVisionModel.from_pretrained("google/siglip-base-patch16-224",cache_dir='/NS/ssdecl/work')
+        >>> processor = AutoProcessor.from_pretrained("google/siglip-base-patch16-224",cache_dir='/NS/ssdecl/work')
 
         >>> url = "http://images.cocodataset.org/val2017/000000039769.jpg"
         >>> image = Image.open(requests.get(url, stream=True).raw)
@@ -687,7 +687,7 @@ class SigLipVisionTower(nn.Module):
         self.is_loaded = False
 
         if vision_tower is not None:
-            self.config = SigLipVisionConfig.from_pretrained(vision_tower)
+            self.config = SigLipVisionConfig.from_pretrained(vision_tower,cache_dir='/NS/ssdecl/work')
         else:
             self.config = SigLipVisionConfig()
 
@@ -704,7 +704,7 @@ class SigLipVisionTower(nn.Module):
         if self.is_loaded:
             return
 
-        self.vision_tower = SigLipVisionModel.from_pretrained(self.vision_tower_name)
+        self.vision_tower = SigLipVisionModel.from_pretrained(self.vision_tower_name,cache_dir='/NS/ssdecl/work')
 
         self.vision_tower.requires_grad_(False)
         self.vision_tower.eval()
