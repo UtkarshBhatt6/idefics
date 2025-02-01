@@ -1,10 +1,10 @@
 import torch
 from PIL import Image
-from builder import load_pretrained_model
-from mm_utils import get_model_name_from_path
-from run_tiny_chart import inference_model
-from eval_metric import parse_model_output, evaluate_cmds
-
+import pandas as pd
+from tinychart.model.builder import load_pretrained_model
+from tinychart.mm_utils import get_model_name_from_path
+from tinychart.eval.run_tiny_chart import inference_model
+from tinychart.eval.eval_metric import parse_model_output, evaluate_cmds
 def show_image(img_path):
     img = Image.open(img_path).convert('RGB')
     img.show()
@@ -18,14 +18,11 @@ tokenizer, model, image_processor, context_len = load_pretrained_model(
     model_base=None,
     model_name=get_model_name_from_path(model_path),
     device="cuda",
-    cache_dir='/NS/ssdecl/work'
-)
 
-
-
+    )
 def calc_output(image_path,text):
     
-    response = inference_model([img_path], text, model, tokenizer, image_processor, context_len, conv_mode="phi", max_new_tokens=1024)
+    response = inference_model([image_path], text, model, tokenizer, image_processor, context_len, conv_mode="phi", max_new_tokens=1024)
     return evaluate_cmds(parse_model_output(response))
 
 def compute_accuracy(data_path):
@@ -47,3 +44,4 @@ def compute_accuracy(data_path):
     print(f'accuracy: {correct}')
 
 path='../../ChartQADataset/test/test_augmented.json'
+compute_accuracy(path)
