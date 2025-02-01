@@ -50,12 +50,12 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         warnings.warn(
             'There is `lora` in model name but no `model_base` is provided. If you are loading a LoRA model, please provide the `model_base` argument. Detailed instruction: https://github.com/haotian-liu/LLaVA#launch-a-model-worker-lora-weights-unmerged.')
     if 'lora' in model_name.lower() and model_base is not None:
-        lora_cfg_pretrained = AutoConfig.from_pretrained(model_path)
+        lora_cfg_pretrained = AutoConfig.from_pretrained(model_path,cache_dir='/NS/ssdecl/work')
 
         print('Loading LLaVA from base model...')
-        tokenizer = AutoTokenizer.from_pretrained(model_base, padding_side="right")
+        tokenizer = AutoTokenizer.from_pretrained(model_base, padding_side="right",cache_dir='/NS/ssdecl/work')
         model = TinyChartPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True,
-                                                        config=lora_cfg_pretrained, **kwargs)
+                                                        config=lora_cfg_pretrained,cache_dir = "/NS/ssdecl/work", **kwargs)
         token_num, tokem_dim = model.lm_head.out_features, model.lm_head.in_features
         if model.lm_head.weight.shape[0] != token_num:
             model.lm_head.weight = torch.nn.Parameter(
@@ -85,7 +85,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
 
         from peft import PeftModel
         print('Loading LoRA weights...')
-        model = PeftModel.from_pretrained(model, model_path)
+        model = PeftModel.from_pretrained(model, model_path,cache_dir = "/NS/ssdecl/work")
         print('Merging LoRA weights...')
         model = model.merge_and_unload()
         print('Model is loaded...')
@@ -93,17 +93,17 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         # this may be mm projector only
         print('Loading LLaVA from base model...')
 
-        tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False, padding_side="right")
-        cfg_pretrained = TinyChartPhiConfig.from_pretrained(model_path)
+        tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False, padding_side="right",cache_dir='/NS/ssdecl/work')
+        cfg_pretrained = TinyChartPhiConfig.from_pretrained(model_path,cache_dir='/NS/ssdecl/work')
         model = TinyChartPhiForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained,
-                                                        **kwargs)
+                                                      cache_dir = "/NS/ssdecl/work",**kwargs)
 
         mm_projector_weights = torch.load(os.path.join(model_path, 'mm_projector.bin'), map_location='cpu')
         mm_projector_weights = {k: v.to(torch.float16) for k, v in mm_projector_weights.items()}
         model.load_state_dict(mm_projector_weights, strict=False)
     else:
-        tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, padding_side="right")
-        model = TinyChartPhiForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)
+        tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False, padding_side="right",cache_dir='/NS/ssdecl/work')
+        model = TinyChartPhiForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True,cache_dir = "/NS/ssdecl/work",**kwargs)
 
     mm_use_im_start_end = getattr(model.config, "mm_use_im_start_end", False)
     mm_use_im_patch_token = getattr(model.config, "mm_use_im_patch_token", True)
